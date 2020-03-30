@@ -1,9 +1,11 @@
 package com.insure.tech.api.policies.controllers;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,23 +28,23 @@ import com.insure.tech.api.policies.repository.PolicyRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/policy")
+@RequestMapping("/api/v1")
 @RestController
 public class PolicyController {
 
 	private final PolicyRepository policyRepository;
 
-	@GetMapping("/{id}")
+	@GetMapping("/policy/{id}")
 	ResponseEntity<PolicyDto> getPolicy(@PathVariable UUID id) {
 		return new ResponseEntity<>(policyToPolicyDto(policyRepository.findById(id).get()), HttpStatus.OK);
 	}
 
-	@GetMapping("/")
+	@GetMapping("/policy/")
 	public List<Policy> getPolicies() {
 		return (List<Policy>) policyRepository.findAll();
 	}
 
-	@PostMapping("/")
+	@PostMapping("/policy/")
 	public ResponseEntity<PolicyDto> createPolicy(@RequestBody @Validated PolicyDto policyDto) {
 		PolicyDto newPolicyDto = policyToPolicyDto(policyRepository.save(policyDtoToPolicy(policyDto)));
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -52,7 +54,7 @@ public class PolicyController {
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@PutMapping("/{id}")
+	@PutMapping("/policy/{id}")
 	public void updatePolicy(@PathVariable UUID id, PolicyDto policyDto) {
 		Policy policyEntity = policyRepository.findById(id).get(); // TODO: need to create service and mapper
 		policyEntity.setPolicyNumber(policyDto.getPolicyNumber()); // TODO: need to handle not found exception
@@ -63,7 +65,7 @@ public class PolicyController {
 		policyRepository.save(policyEntity);
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/policy/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePolicy(@PathVariable UUID id) {
 
@@ -71,6 +73,21 @@ public class PolicyController {
 		policyRepository.delete(policyEntity);
 
 	}
+	
+	
+	
+	@GetMapping("/customers/{customerId}/policies")
+	ResponseEntity<List<PolicyDto>> getPoliciesByCustomer(@PathVariable UUID customerId)
+	{
+		List<Policy> policies = policyRepository.findAllByCustomerId(customerId);
+		List<PolicyDto> policyListDTOs = new ArrayList<>();
+		for (Policy policy : policies) {
+			policyListDTOs.add(policyToPolicyDto(policy));
+			
+		}
+		return new ResponseEntity<>(policyListDTOs, HttpStatus.OK);	
+	}
+	
 
 	private Policy policyDtoToPolicy(PolicyDto policyDto) {
 		return Policy.builder().id(UUID.randomUUID()).policyNumber(policyDto.getPolicyNumber())
@@ -78,6 +95,7 @@ public class PolicyController {
 				.createdDate(new Timestamp(System.currentTimeMillis()))
 				.lastModifiedDate(new Timestamp(System.currentTimeMillis()))
 				.payementOption(policyDto.getPayementOption()).totalAmount(policyDto.getTotalAmount())
+				.customerId(policyDto.getCustomerId())
 				.policyEffectiveDate(new Timestamp(System.currentTimeMillis())).build();
 
 	}
@@ -85,6 +103,7 @@ public class PolicyController {
 	private PolicyDto policyToPolicyDto(Policy policy) {
 		PolicyDto policyDto = new PolicyDto();
 		policyDto.setId(policy.getId());
+		policyDto.setCustomerId(policy.getCustomerId());
 		policyDto.setPolicyNumber(policy.getPolicyNumber());
 		policyDto.setPayementOption(policy.getPayementOption());
 		policyDto.setTotalAmount(policy.getTotalAmount());

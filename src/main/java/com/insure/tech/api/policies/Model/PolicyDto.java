@@ -49,6 +49,9 @@ public class PolicyDto implements Serializable {
 
     @NotNull
 	private String payementOption;
+    
+    @NotNull
+   	private UUID customerId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Positive

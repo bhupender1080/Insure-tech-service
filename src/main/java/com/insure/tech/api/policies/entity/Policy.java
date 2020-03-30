@@ -39,6 +39,10 @@ public class Policy implements Serializable {
     @Type(type="org.hibernate.type.UUIDCharType")
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
 	private UUID id;
+	
+	@Column(length = 36, columnDefinition = "varchar(36)", nullable = false)
+	@Type(type="org.hibernate.type.UUIDCharType")
+	private UUID customerId;
 
 	@Column(nullable = false, unique = true)
 	private String policyNumber;

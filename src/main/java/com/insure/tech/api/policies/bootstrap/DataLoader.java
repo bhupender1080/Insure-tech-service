@@ -28,11 +28,14 @@ System.out.println("here"+policyRepository.count());
 	}
 
 	private void loadPolicyObjects() {
+		UUID cutomerid = UUID.randomUUID();
+		System.out.println("cutomerid----"+cutomerid);
 		Policy p1 = Policy.builder().id(UUID.randomUUID()).policyNumber("1224")
 				.policyExpiryDate(new Timestamp(System.currentTimeMillis())).active(Boolean.TRUE)
 				.createdDate(new Timestamp(System.currentTimeMillis()))
 				.lastModifiedDate(new Timestamp(System.currentTimeMillis())).payementOption("")
 				.totalAmount(new BigDecimal("12.95")).policyEffectiveDate(new Timestamp(System.currentTimeMillis()))
+				.customerId(cutomerid)
 				.build();
 
 		Policy p2 = Policy.builder().id(UUID.randomUUID()).policyNumber("1225")
@@ -40,6 +43,7 @@ System.out.println("here"+policyRepository.count());
 				.createdDate(new Timestamp(System.currentTimeMillis()))
 				.lastModifiedDate(new Timestamp(System.currentTimeMillis())).payementOption("")
 				.totalAmount(new BigDecimal("11.95")).policyEffectiveDate(new Timestamp(System.currentTimeMillis()))
+				.customerId(cutomerid)
 				.build();
 
 		Policy p3 = Policy.builder().id(UUID.randomUUID()).policyNumber("1226")
@@ -47,6 +51,7 @@ System.out.println("here"+policyRepository.count());
 				.createdDate(new Timestamp(System.currentTimeMillis()))
 				.lastModifiedDate(new Timestamp(System.currentTimeMillis())).payementOption("")
 				.totalAmount(new BigDecimal("13.95")).policyEffectiveDate(new Timestamp(System.currentTimeMillis()))
+				.customerId(cutomerid)
 				.build();
 
 		System.out.println("UUID ->"+policyRepository.save(p1).getId());
